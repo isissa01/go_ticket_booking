@@ -45,44 +45,41 @@ func main() {
 		isValidEmail := strings.Contains(email, "@")
 		isValidTicketNumber := userTickets > 0 && userTickets <= remainingTickets
 
-		if !isValidName {
-			fmt.Println("Name must be at least 2 characters")
-			continue
+		if isValidName && isValidEmail && isValidTicketNumber {
+
+			remainingTickets -= userTickets
+
+			bookings = append(bookings, firstName+" "+lastName)
+
+			fmt.Printf("Thank you %v %v for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email)
+			fmt.Printf("%v tickets remaining for the %v\n", remainingTickets, conferenceName)
+
+			firstNames := []string{}
+			for _, booking := range bookings {
+				firstNames = append(firstNames, strings.Split(booking, " ")[0])
+			}
+
+			fmt.Printf("The first names of bookings are: %v\n", firstNames)
+
+			if remainingTickets == 0 {
+				fmt.Println("Our conference is booked out. Come back next year.")
+				break
+			}
+		} else {
+			if !isValidName {
+				fmt.Println("Name must be at least 2 characters")
+
+			}
+			if !isValidEmail {
+				fmt.Println("Email address is invalid")
+
+			}
+			if !isValidTicketNumber {
+				fmt.Println("Number of tickets is invalid")
+
+			}
+			//validate user input
 		}
-		if !isValidEmail {
-			fmt.Println("Email address is invalid")
-			continue
-		}
-		if !isValidTicketNumber {
-			fmt.Println("Number of tickets is invalid")
-			continue
-
-		}
-		//validate user input
-		if userTickets > remainingTickets {
-			fmt.Printf("We only have %v tickets remaining, so you can't book %v tickets\n", remainingTickets, userTickets)
-			continue
-		}
-
-		remainingTickets -= userTickets
-
-		bookings = append(bookings, firstName+" "+lastName)
-
-		fmt.Printf("Thank you %v %v for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email)
-		fmt.Printf("%v tickets remaining for the %v\n", remainingTickets, conferenceName)
-
-		firstNames := []string{}
-		for _, booking := range bookings {
-			firstNames = append(firstNames, strings.Split(booking, " ")[0])
-		}
-
-		fmt.Printf("The first names of bookings are: %v\n", firstNames)
-
-		if remainingTickets == 0 {
-			fmt.Println("Our conference is booked out. Come back next year.")
-			break
-		}
-
 	}
 
 	//send ticket to user email
