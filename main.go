@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"sync"
+	"time"
 )
 
 const conferenceTickets = 50
@@ -17,31 +19,39 @@ type UserData struct {
 	numberOfTickets uint
 }
 
+var wg = sync.WaitGroup{}
+
 func main() {
 
 	greetUsers()
 
 	//ask user for their name
-	for {
-		firstName, lastName, email, userTickets := getUserInput()
-		//validate user input
-		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, email, userTickets)
 
-		if isValidName && isValidEmail && isValidTicketNumber {
+	firstName, lastName, email, userTickets := getUserInput()
+	//validate user input
+	isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, email, userTickets)
 
-			bookTickets(firstName, lastName, email, userTickets)
+	if isValidName && isValidEmail && isValidTicketNumber {
 
-			printFirstNames()
+		bookTickets(firstName, lastName, email, userTickets)
 
-			if remainingTickets == 0 {
-				fmt.Println("Our conference is booked out. Come back next year.")
-				break
-			}
-		} else {
-			printErrorMessages(isValidName, isValidEmail, isValidTicketNumber)
-			//validate user input
+		//adds concurrency
+		wg.Add(1)
+
+		go sendTicket(firstName, lastName, email, userTickets)
+
+		printFirstNames()
+
+		if remainingTickets == 0 {
+			fmt.Println("Our conference is booked out. Come back next year.")
+			// break
 		}
+	} else {
+		printErrorMessages(isValidName, isValidEmail, isValidTicketNumber)
+		//validate user input
 	}
+
+	wg.Wait()
 
 }
 func greetUsers() {
@@ -87,4 +97,16 @@ func bookTickets(firstName string, lastName string, email string, userTickets ui
 
 	fmt.Printf("Thank you %v %v for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email)
 	fmt.Printf("%v tickets remaining for the %v\n", remainingTickets, conferenceName)
+
+}
+func sendTicket(firstName string, lastName string, email string, userTickets uint) {
+
+	time.Sleep(10 * time.Second)
+	fmt.Println("##################")
+	fmt.Println("Sending tickets:")
+	ticket := fmt.Sprintf("%v tickets for %v %v has been sent to %v\n", userTickets, firstName, lastName, email)
+
+	fmt.Printf("%v", ticket)
+	fmt.Println("##################")
+	wg.Done()
 }
