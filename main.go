@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	var conferenceName = "Go Conference"
+	conferenceName := "Go Conference"
 	const conferenceTickets = 50
 	var remainingTickets uint = 50
 	fmt.Println("Welcome to", conferenceName, "booking system")
@@ -40,6 +40,24 @@ func main() {
 		fmt.Print("Enter the number of tickets: ")
 		fmt.Scan(&userTickets)
 
+		//validate user input
+		isValidName := len(firstName) >= 2 && len(lastName) >= 2
+		isValidEmail := strings.Contains(email, "@")
+		isValidTicketNumber := userTickets > 0 && userTickets <= remainingTickets
+
+		if !isValidName {
+			fmt.Println("Name must be at least 2 characters")
+			continue
+		}
+		if !isValidEmail {
+			fmt.Println("Email address is invalid")
+			continue
+		}
+		if !isValidTicketNumber {
+			fmt.Println("Number of tickets is invalid")
+			continue
+
+		}
 		//validate user input
 		if userTickets > remainingTickets {
 			fmt.Printf("We only have %v tickets remaining, so you can't book %v tickets\n", remainingTickets, userTickets)
